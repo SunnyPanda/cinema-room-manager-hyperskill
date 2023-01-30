@@ -12,18 +12,16 @@ public class Cinema {
         int cols = in.nextInt();
 
         char[][] seats = fillSeats(rows, cols);
-        printSeats(seats);
-
         int[][] prices = calcPrices(rows, cols);
 
-        System.out.println("\nEnter a row number:");
-        int chosenRow = in.nextInt();
-        System.out.println("Enter a seat number in that row:");
-        int chosenCol = in.nextInt();
-        System.out.printf("\nTicket price: $%d\n\n", prices[chosenRow - 1][chosenCol - 1]);
-        seats[chosenRow - 1][chosenCol - 1] = 'B';
-
-        printSeats(seats);
+        int action = askForAction(in);
+        while (action != 0) {
+            switch (action) {
+                case 1 -> printSeats(seats);
+                case 2 -> buyTicket(in, prices, seats);
+            }
+            action = askForAction(in);
+        }
     }
 
     private static char[][] fillSeats(int rows, int cols) {
@@ -35,8 +33,27 @@ public class Cinema {
         }
         return seats;
     }
+
+    private static int[][] calcPrices(int rows, int cols) {
+        int[][] prices = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                prices[i][j] = calcPrice(i, rows, cols);
+            }
+        }
+        return prices;
+    }
+
+    private static int askForAction(Scanner in) {
+        System.out.println("""
+                
+                1. Show the seats
+                2. Buy a ticket
+                0. Exit""");
+        return in.nextInt();
+    }
     private static void printSeats(char[][] seats) {
-        System.out.println("Cinema:");
+        System.out.println("\nCinema:");
         for (int i = 0; i <= seats[0].length; i++) {
             System.out.print(i == 0 ? "  " : i + " ");
         }
@@ -50,15 +67,16 @@ public class Cinema {
         }
     }
 
-    private static int[][] calcPrices(int rows, int cols) {
-        int[][] prices = new int[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                prices[i][j] = calcPrice(i, rows, cols);
-            }
-        }
-        return prices;
+    private static void buyTicket(Scanner in, int[][] prices, char[][] seats) {
+        System.out.println("\nEnter a row number:");
+        int chosenRow = in.nextInt();
+        System.out.println("Enter a seat number in that row:");
+        int chosenCol = in.nextInt();
+
+        System.out.printf("Ticket price: $%d\n", prices[chosenRow - 1][chosenCol - 1]);
+        seats[chosenRow - 1][chosenCol - 1] = 'B';
     }
+
     private static int calcPrice(int row, int rows, int cols) {
         int numOfSeats = rows * cols;
         if (numOfSeats <= 60) {
